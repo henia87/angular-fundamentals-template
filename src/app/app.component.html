@@ -1,22 +1,56 @@
-<app-header></app-header>
+<app-header>
+  <app-button [buttonText]="loginLogoutButton"></app-button>
+</app-header>
 <div class="app-root">
+  <div class="button-container">
+    <app-button [buttonText]="showCourseButton"></app-button>
+    <app-button [iconName]="trashIcon"></app-button>
+    <app-button [iconName]="pencilIcon"></app-button>
+  </div>
+
   <!-- Search component -->
-  <!--<app-search></app-search>-->
+  <!-- <app-search></app-search> -->
 
   <!-- Info component -->
-  <!--<app-info></app-info>-->
+  <app-info [title]="infoTitle" [text]="infoText">
+    <app-button [buttonText]="infoButton"></app-button>
+  </app-info>
 
   <!-- Course Card component -->
-  <!--<app-course-card></app-course-card>-->
+  <h1>Course card component</h1>
+  <app-course-card *ngFor="let course of courses"
+    [title]="course.title"
+    [description]="course.description"
+    [creationDate]="course.creationDate"
+    [duration]="course.duration"
+    [authors]="course.authors"
+    [editable]="editable">
+    <div class="button-container">
+      <app-button [iconName]="trashIcon"></app-button>
+      <app-button [iconName]="pencilIcon"></app-button>
+    </div>
+  </app-course-card>
+
+  <h1>Courses/Course list component</h1>
+  <app-courses></app-courses>
+
+  <h1>Course info component</h1>
+  <app-course-info *ngFor="let course of courses"
+  [title]="course.title"
+  [description]="course.description"
+  [id]="course.id"
+  [creationDate]="course.creationDate"
+  [duration]="course.duration"
+  [authors]="course.authors"></app-course-info>
 
   <!-- Login Form component -->
-  <!--<app-login-form></app-login-form>-->
+  <!-- <app-login-form></app-login-form> -->
 
   <!-- Login Form component -->
-  <!--<app-registration-form></app-registration-form>-->
+  <!-- <app-registration-form></app-registration-form> -->
 
   <!-- Login Form component -->
-  <!--<app-course-form></app-course-form>-->
+  <!-- <app-course-form></app-course-form> -->
 
   <!-- Modal component -->
   <!-- <app-modal [message]="'Message'" [title]="'Title'" [okButtonText]="'Ok'" [cancelButtonText]="'Cancel'"></app-modal> -->

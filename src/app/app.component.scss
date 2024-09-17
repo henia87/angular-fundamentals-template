@@ -6,3 +6,13 @@
   justify-content: center;
   padding: 24px;
 }
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 10px;
+  width: auto;
+  flex-grow: 0;
+  padding: 10px;
+}
