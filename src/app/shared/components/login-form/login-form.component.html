@@ -6,19 +6,30 @@
         <div class="form__control">
           <label for="email">Email</label>
           <!--Use the name `email` for the form control.-->
-          <input type="text" id="email" placeholder="Input text"/>
-          <span id="emailErrorMessage" class="text-danger">Email is required.</span>
+          <input type="text" id="email" name="email" [(ngModel)]="email" required emailValidator #emailValidation="ngModel" placeholder="Input text" />
+          <span *ngIf="emailValidation.invalid && (loginForm.submitted || emailValidation.touched)" id="emailErrorMessage">
+            <span *ngIf="emailValidation.errors?.['required']" class="text-danger">Email is required.</span>
+            <span *ngIf="emailValidation.errors?.['invalidEmail']" class="text-danger">Please enter a valid email address.</span>
+          </span>
         </div>
         <div class="form__control">
           <label for="password">Password</label>
           <!--Use the name `password` for the form control.-->
-          <input type="password" id="password" placeholder="Input text"/>
-          <span id="passwordErrorMessage" class="text-danger">Password is required.</span>
+          <div class="password-field">
+            <input type="password" id="password" name="password" [(ngModel)]="password" required minlength="4" #passwordValidation="ngModel" placeholder="Input text" appTogglePassword #togglePassword="togglePassword"/>
+            <button type="button" (click)="togglePassword.togglePassword()" class="icon">
+              <fa-icon [icon]="togglePassword.isVisible() ? 'eye' : 'eye-slash'"></fa-icon>
+            </button>
+          </div>
+          <span *ngIf="passwordValidation.invalid && (loginForm.submitted || passwordValidation.touched)" id="passwordErrorMessage">
+            <span *ngIf="passwordValidation.errors?.['required']" class="text-danger">Password is required.</span>
+            <span *ngIf="passwordValidation.errors?.['minlength']" class="text-danger">Password must be at least 4 characters.</span>
+          </span>
         </div>
       </div>
       <div>
         <div class="form__action">
-          <app-button></app-button>
+          <app-button [buttonText]="'Login'"></app-button>
         </div>
         <div class="form__text">
           If you don't have an account you may <strong>Registration</strong>

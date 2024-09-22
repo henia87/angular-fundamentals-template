@@ -9,6 +9,6 @@ export class DurationPipe implements PipeTransform {
         let hours = Math.floor(duration / 60);
         let minutes = duration % 60;
     
-        return `${hours}:${minutes < 10 ? '0' + minutes : minutes}`;   
+        return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;   
     }
 }
