@@ -14,7 +14,7 @@
       <div class="form__control">
         <!--Use the name `email` for the form control.-->
         <label for="email">Email</label>
-        <input type="text" id="email" formControlName="email" required placeholder="Input text"/>
+        <input type="text" id="email" formControlName="email" emailValidator required placeholder="Input text"/>
         <span *ngIf="email.invalid && (submitted || email.touched)" id="emailErrorMessage" class="text-danger">
           <span *ngIf="email.errors?.['required']">Email is required.</span>
           <span *ngIf="email.errors?.['invalidEmail']">Please enter a valid email address.</span>

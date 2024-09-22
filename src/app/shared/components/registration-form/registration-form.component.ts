@@ -19,14 +19,9 @@ export class RegistrationFormComponent {
   buildForm(): void {
     this.registrationForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(6)]],
-      email: ['', [Validators.required, this.emailValidator]],
+      email: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(4)]]
     });
-  }
-
-  emailValidator(control: AbstractControl): ValidationErrors | null {
-    let directive = new EmailValidatorDirective();
-    return directive.validate(control);
   }
 
   get name() {
