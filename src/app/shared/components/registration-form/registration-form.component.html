@@ -23,12 +23,7 @@
       <div class="form__control">
         <!--Use the name `password` for the form control.-->
         <label for="password">Password</label>
-        <div class="password-field">
-          <input type="password" id="password" formControlName="password" required minlength="4" placeholder="Input text" appTogglePassword #togglePassword="togglePassword"/>
-          <button type="button" (click)="togglePassword.togglePassword()" class="icon">
-            <fa-icon [icon]="togglePassword.isVisible() ? 'eye' : 'eye-slash'"></fa-icon>
-          </button>
-        </div>
+        <input type="password" id="password" formControlName="password" required minlength="4" placeholder="Input text"/>
         <span *ngIf="password.invalid && (submitted || password.touched)" id="passwordErrorMessage" class="text-danger">
           <span *ngIf="password.errors?.['required']">Password is required.</span>
           <span *ngIf="password.errors?.['minlength']">Password must be at least 4 characters.</span>
