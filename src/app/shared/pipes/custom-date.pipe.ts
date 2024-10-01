@@ -6,6 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class CustomDatePipe implements PipeTransform {
     // Add your code here
     transform(date: Date): string {
+        if(typeof date === "string") {
+            date = new Date(date);
+        }
+        
         let year = date.getFullYear();
         let month = date.getMonth() + 1;
         let day = date.getDate();

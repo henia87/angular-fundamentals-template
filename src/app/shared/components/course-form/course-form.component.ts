@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder, FormGroup,
   Validators, FormArray, FormControl
@@ -6,23 +6,26 @@ import {
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { fas, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { CoursesStoreService } from '@app/services/courses-store.service';
 
 @Component({
   selector: 'app-course-form',
   templateUrl: './course-form.component.html',
   styleUrls: ['./course-form.component.scss'],
 })
-export class CourseFormComponent {
-  constructor(public fb: FormBuilder, public library: FaIconLibrary) {
-    library.addIconPacks(fas);
-    this.buildForm();
-  }
+export class CourseFormComponent implements OnInit {
   courseForm!: FormGroup;
   // Use the names `title`, `description`, `author`, 'authors' (for authors list), `duration` for the form controls.
-
+  courseId: string | null = null;
   submitted = false;
   trashIcon = faTrashCan;
   addAuthorIcon = faPlus;
+
+  constructor(public fb: FormBuilder, public library: FaIconLibrary, private router: Router, private route: ActivatedRoute, private coursesStoreService: CoursesStoreService) {
+    library.addIconPacks(fas);
+    this.buildForm();
+  }
 
   buildForm(): void {
     this.courseForm = this.fb.group({
@@ -33,6 +36,23 @@ export class CourseFormComponent {
       courseAuthors: this.fb.array([]),
       duration: [0, [Validators.required, Validators.min(0)]]
     });
+  }
+
+  ngOnInit(): void {
+    this.courseId = this.route.snapshot.paramMap.get("id");
+
+    if(this.courseId) {
+      this.coursesStoreService.getCourse(this.courseId).subscribe((courseData) => {
+        this.courseForm.patchValue({
+          title: courseData.title,
+          description: courseData.description,
+          duration: courseData.duration
+        });
+        courseData.authors.forEach((author: string) => {
+          this.authors.push(this.fb.control(author));
+        });
+      });
+    }
   }
 
   get title() {
@@ -61,6 +81,22 @@ export class CourseFormComponent {
 
   onSubmit() {
     this.submitted = true;
+    
+    if(this.courseForm.valid) {
+      let courseData = this.courseForm.value;
+      if(this.courseId) {
+        this.coursesStoreService.editCourse(this.courseId, courseData).subscribe(() => {
+          alert("Course edited.");
+          this.router.navigate(["/courses"]);
+        });
+      }
+      else {
+        this.coursesStoreService.createCourse(courseData).subscribe(() => {
+          alert("Course created.");
+          this.router.navigate(["/courses"]);
+        });
+      }
+    }
   }
 
   createAuthor() {
@@ -85,6 +121,10 @@ export class CourseFormComponent {
 
   deleteAuthor(index: number) {
     this.authors.removeAt(index);
+  }
+
+  goBack() {
+    this.router.navigate(['/courses'])
   }
 }
 

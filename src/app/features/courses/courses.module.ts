@@ -3,6 +3,25 @@ import { CommonModule } from '@angular/common';
 import { CoursesComponent } from './courses.component';
 import { CourseListComponent } from './course-list/course-list.component';
 import { SharedModule } from '@app/shared/shared.module';
+import { RouterModule, Routes } from '@angular/router';
+import { CourseInfoComponent } from '../course-info/course-info.component';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: CoursesComponent,
+    children: [
+      {
+        path: '',
+        component: CourseListComponent
+      },
+      {
+        path: ':id',
+        component: CourseInfoComponent
+      }
+    ]
+  }
+]
 
 @NgModule({
   declarations: [
@@ -11,7 +30,8 @@ import { SharedModule } from '@app/shared/shared.module';
   ],
   imports: [
     CommonModule,
-    SharedModule
+    SharedModule,
+    RouterModule.forChild(routes)
   ],
   exports: [
     CoursesComponent,

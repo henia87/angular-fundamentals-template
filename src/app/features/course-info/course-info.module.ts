@@ -2,7 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CourseInfoComponent } from './course-info.component';
 import { SharedModule } from '@app/shared/shared.module';
+import { RouterModule, Routes } from '@angular/router';
 
+const routes : Routes = [
+  {path: 'courses/:id', component: CourseInfoComponent}
+];
 
 @NgModule({
   declarations: [
@@ -10,10 +14,12 @@ import { SharedModule } from '@app/shared/shared.module';
   ],
   imports: [
     CommonModule,
-    SharedModule
+    SharedModule,
+    RouterModule.forChild(routes)
   ],
   exports: [
-    CourseInfoComponent
+    CourseInfoComponent,
+    RouterModule
   ]
 })
 export class CourseInfoModule { }

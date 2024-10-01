@@ -82,8 +82,8 @@
         </span>
       </div>
       <div class="form__action">
-        <app-button [buttonText]="'Cancel'"></app-button>
-        <app-button [buttonText]="'Create Course'"></app-button>
+        <app-button [buttonText]="'Cancel'" (click)="goBack()"></app-button>
+        <app-button [buttonText]="'Create Course'" (click)="onSubmit()"></app-button>
       </div>
     </div>
   </div>
