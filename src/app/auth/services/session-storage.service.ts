@@ -8,7 +8,7 @@ const TOKEN = 'SESSION_TOKEN'; // Use this constant for the session storage entr
   providedIn: 'root'
 })
 export class SessionStorageService {
-  constructor(@Inject(WINDOW) private window: Window) {}
+  constructor(@Inject(Window) private window: Window) {}
 
   setToken(token: string){
     // Add your code here

@@ -26,7 +26,15 @@ import { WINDOW, windowFactory } from './services/window.provider';
     CourseInfoModule,
     AppRoutingModule
   ],
-  providers: [AuthorizedGuard, NotAuthorizedGuard, CoursesService, CoursesStoreService, {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}, {provide: WINDOW, useFactory: windowFactory}],
+  providers: [
+    AuthorizedGuard,
+    NotAuthorizedGuard,
+    CoursesService,
+    CoursesStoreService,
+    {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true},
+    {provide: WINDOW, useFactory: windowFactory},
+    {provide: Window, useValue: window}
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
