@@ -13,7 +13,7 @@ import { CourseInfoModule } from './features/course-info/course-info.module';
 import { AppRoutingModule } from './app-routing.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './auth/interceptors/token.interceptor';
-import { WINDOW, windowFactory } from './auth/services/window.provider';
+import { WINDOW, windowFactory } from './services/window.provider';
 
 @NgModule({
   declarations: [AppComponent],

@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { WINDOW } from './window.provider';
+import { WINDOW } from '../../services/window.provider';
 
 const TOKEN = 'SESSION_TOKEN'; // Use this constant for the session storage entry key
 // Add your code here
