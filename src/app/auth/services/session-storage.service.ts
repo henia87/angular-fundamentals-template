@@ -1,8 +1,13 @@
-import { Injectable, Inject } from '@angular/core';
-//import { WINDOW } from '../../services/window.provider';
-import { WINDOW } from '@app/services/window.service';
+import { Injectable, Inject, InjectionToken } from '@angular/core';
+
 
 const TOKEN = 'SESSION_TOKEN'; // Use this constant for the session storage entry key
+
+const WINDOW = new InjectionToken<Window>('WindowToken', {
+  providedIn: 'root',
+  factory: () => window,
+});
+
 // Add your code here
 
 @Injectable({

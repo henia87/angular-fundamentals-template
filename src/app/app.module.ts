@@ -13,8 +13,6 @@ import { CourseInfoModule } from './features/course-info/course-info.module';
 import { AppRoutingModule } from './app-routing.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './auth/interceptors/token.interceptor';
-//import { WINDOW, windowFactory } from './services/window.provider';
-import { WINDOW_PROVIDERS } from './services/window.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,8 +31,7 @@ import { WINDOW_PROVIDERS } from './services/window.service';
     CoursesService,
     CoursesStoreService,
     {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true},
-    //{provide: WINDOW, useFactory: windowFactory},
-    WINDOW_PROVIDERS
+    {provide: Window, useValue: window},
   ],
   bootstrap: [AppComponent],
 })
