@@ -12,9 +12,11 @@ export class UserService {
     getUser(): Observable<{ name: string; email: string; password: string }> {
         // Add your code here
         let token = this.sessionStorageService.getToken();
-        console.log(token);
+        let headers;
 
-        let headers = new HttpHeaders({"Authorization": `Bearer ${token}`});
+        if(token) {
+            headers = new HttpHeaders({Authorization: `${token}`});
+        }
 
         return this.http.get<{name: string, email: string, password: string}>("http://localhost:4000/users/me", { headers }).pipe(
             catchError((error) => {

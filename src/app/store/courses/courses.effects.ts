@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, catchError, mergeMap, tap } from 'rxjs/operators';
+import { map, catchError, mergeMap, tap, switchMap } from 'rxjs/operators';
 import { CoursesService } from '@app/services/courses.service';
 import * as CoursesActions from './courses.actions';
 import { Router } from '@angular/router';
 import { CoursesStateFacade } from './courses.facade';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class CoursesEffects {
@@ -15,27 +16,35 @@ export class CoursesEffects {
     getAll$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CoursesActions.requestAllCourses),
-            mergeMap(() => this.coursesService.getAll().pipe(
-                map(courses => CoursesActions.requestAllCoursesSuccess({ courses })),
-                catchError(error => of(CoursesActions.requestAllCoursesFail({ error })))
-            ),
+            mergeMap(() => this.coursesService.getAll()
+                .pipe(
+                    map(courses => CoursesActions.requestAllCoursesSuccess({ courses })),
+                    catchError((error: HttpErrorResponse) => {
+                        const formattedError = `Error ${error.status} (${error.statusText}): ${error.error?.message || "Unknown error"}`;
+                        return of(CoursesActions.requestAllCoursesFail({ error: formattedError }))
+                    })
+                )
             )
         )
     );
 
-    filteredCourses$ = createEffect(() => 
+    filteredCourses$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CoursesActions.requestFilteredCourses),
-            mergeMap(({ title }) => 
-                this.coursesStateFacade.allCourses$.pipe(
+            switchMap(({ title }) => {
+                return this.coursesStateFacade.allCourses$.pipe(
                     map(courses => {
-                        let filteredCourses = courses.filter(course => 
+                        const filteredCourses = courses.filter(course =>
                             course.title.toLowerCase().includes(title.toLowerCase())
                         );
                         return CoursesActions.requestFilteredCoursesSuccess({ courses: filteredCourses });
+                    }),
+                    catchError((error: HttpErrorResponse) => {
+                        const formattedError = `Error ${error.status} (${error.statusText}): ${error.error?.message || "Unknown error"}`;
+                        return of(CoursesActions.requestFilteredCoursesFail({ error: formattedError }))
                     })
-                )
-            )
+                );
+            })
         )
     );
 
@@ -44,7 +53,10 @@ export class CoursesEffects {
             ofType(CoursesActions.requestSingleCourse),
             mergeMap(action => this.coursesService.getCourse(action.id).pipe(
                 map(course => CoursesActions.requestSingleCourseSuccess({ course })),
-                catchError(error => of(CoursesActions.requestSingleCourseFail({ error })))
+                catchError((error: HttpErrorResponse) => {
+                    const formattedError = `Error ${error.status} (${error.statusText}): ${error.error?.message || "Unknown error"}`;
+                    return of(CoursesActions.requestSingleCourseFail({ error: formattedError }))
+                })
             )
             )
         )
@@ -55,7 +67,10 @@ export class CoursesEffects {
             ofType(CoursesActions.requestDeleteCourse),
             mergeMap(action => this.coursesService.deleteCourse(action.id).pipe(
                 map(() => CoursesActions.requestDeleteCourseSuccess()),
-                catchError(error => of(CoursesActions.requestDeleteCourseFail({ error })))
+                catchError((error: HttpErrorResponse) => {
+                    const formattedError = `Error ${error.status} (${error.statusText}): ${error.error?.message || "Unknown error"}`;
+                    return of(CoursesActions.requestDeleteCourseFail({ error: formattedError }))
+                })
             )
             )
         )
@@ -66,7 +81,10 @@ export class CoursesEffects {
             ofType(CoursesActions.requestEditCourse),
             mergeMap(action => this.coursesService.editCourse(action.id, action.course).pipe(
                 map(course => CoursesActions.requestEditCourseSuccess({ course })),
-                catchError(error => of(CoursesActions.requestDeleteCourseFail({ error })))
+                catchError((error: HttpErrorResponse) => {
+                    const formattedError = `Error ${error.status} (${error.statusText}): ${error.error?.message || "Unknown error"}`;
+                    return of(CoursesActions.requestEditCourseFail({ error: formattedError }))
+                })
             )
             )
         )
@@ -77,7 +95,10 @@ export class CoursesEffects {
             ofType(CoursesActions.requestCreateCourse),
             mergeMap(action => this.coursesService.createCourse(action.course).pipe(
                 map(course => CoursesActions.requestCreateCourseSuccess({ course })),
-                catchError(error => of(CoursesActions.requestCreateCourseFail({ error })))
+                catchError((error: HttpErrorResponse) => {
+                    const formattedError = `Error ${error.status} (${error.statusText}): ${error.error?.message || "Unknown error"}`;
+                    return of(CoursesActions.requestCreateCourseFail({ error: formattedError }))
+                })
             )
             )
         )

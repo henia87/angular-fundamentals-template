@@ -20,7 +20,7 @@ export class UserStoreService {
             tap(user => {
                 if(user) {
                     this.name$$.next(user.name);
-                this.isAdmin$$.next(user.email === "admin@example.com" && user.password === "admin123");
+                    this.isAdmin$$.next(user.email === "admin@example.com" && user.password === "admin123");
                 }
             }),
             map(() => void 0)

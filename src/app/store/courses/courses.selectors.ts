@@ -21,7 +21,7 @@ export const isSingleCourseLoadingSelector = createSelector(
 
 export const getCourses = createSelector(  // Is this supposed to be filtering?
     featureCoursesState,
-    (state: CoursesState) => state.allCourses
+    (state: CoursesState) => state.filteredCourses
 );
 
 export const getAllCourses = createSelector(

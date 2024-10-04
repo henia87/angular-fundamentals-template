@@ -1,11 +1,17 @@
 <app-search [placeholder]="'Input text'" (search)="onSearch($event)"></app-search>
 
-<app-course-list 
-  [courses]="filteredCourses"
-  [editable]="editable"
-  (showCourse)="showCourseEvent($event)"
-  (editCourse)="editCourseEvent($event)"
-  (deleteCourse)="deleteCourseEvent($event)">
-</app-course-list>
+<div *ngIf="isAllLoading$ | async; else courseList">
+  Loading...
+</div>
+
+<ng-template #courseList>
+  <app-course-list
+    [courses]="lastSearchTerm ? filteredCourses : courses"
+    [editable]="editable"
+    (showCourse)="showCourseEvent($event)"
+    (editCourse)="editCourseEvent($event)"
+    (deleteCourse)="deleteCourseEvent($event)">
+  </app-course-list>
+</ng-template>
 
 <app-button [buttonText]="'Add course'" (click)="addCourse()" *ngIf="isAdmin"></app-button>

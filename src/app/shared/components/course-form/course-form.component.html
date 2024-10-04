@@ -1,5 +1,8 @@
 <!-- Replace ::text:: with your code -->
 <h2>Create / Edit Course</h2>
+<div *ngIf="isSingleLoading$ | async">
+  Loading course details...
+</div>
 <form [formGroup]="courseForm">
   <div class="app-plate">
     <div class="course">
