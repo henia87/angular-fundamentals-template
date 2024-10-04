@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder, FormGroup,
   Validators, FormArray, FormControl
@@ -8,19 +8,22 @@ import { fas, faTrashCan, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CoursesStoreService } from '@app/services/courses-store.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-course-form',
   templateUrl: './course-form.component.html',
   styleUrls: ['./course-form.component.scss'],
 })
-export class CourseFormComponent implements OnInit {
+export class CourseFormComponent implements OnInit, OnDestroy {
   courseForm!: FormGroup;
   // Use the names `title`, `description`, `author`, 'authors' (for authors list), `duration` for the form controls.
   courseId: string | null = null;
   submitted = false;
   trashIcon = faTrashCan;
   addAuthorIcon = faPlus;
+  private unsubscribe$ = new Subject<void>();
 
   constructor(public fb: FormBuilder, public library: FaIconLibrary, private router: Router, private route: ActivatedRoute, private coursesStoreService: CoursesStoreService) {
     library.addIconPacks(fas);
@@ -42,7 +45,9 @@ export class CourseFormComponent implements OnInit {
     this.courseId = this.route.snapshot.paramMap.get("id");
 
     if(this.courseId) {
-      this.coursesStoreService.getCourse(this.courseId).subscribe((courseData) => {
+      this.coursesStoreService.getCourse(this.courseId)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((courseData) => {
         this.courseForm.patchValue({
           title: courseData.title,
           description: courseData.description,
@@ -85,13 +90,17 @@ export class CourseFormComponent implements OnInit {
     if(this.courseForm.valid) {
       let courseData = this.courseForm.value;
       if(this.courseId) {
-        this.coursesStoreService.editCourse(this.courseId, courseData).subscribe(() => {
+        this.coursesStoreService.editCourse(this.courseId, courseData)
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(() => {
           alert("Course edited.");
           this.router.navigate(["/courses"]);
         });
       }
       else {
-        this.coursesStoreService.createCourse(courseData).subscribe(() => {
+        this.coursesStoreService.createCourse(courseData)
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(() => {
           alert("Course created.");
           this.router.navigate(["/courses"]);
         });
@@ -125,6 +134,11 @@ export class CourseFormComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/courses'])
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }
 

@@ -12,5 +12,6 @@ export class AuthorizedGuard implements CanLoad {
 
     canLoad(): boolean | UrlTree {
         return this.authService.isAuthorised ? true : this.router.parseUrl("/login");
+        //this.router.createUrlTree(["/login"]);
     }
 }

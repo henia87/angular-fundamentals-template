@@ -9,20 +9,20 @@ import { SessionStorageService } from '../services/session-storage.service';
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
     // Add your code here
-
+    
     constructor(private router: Router, private authService: AuthService, private sessionStorageService: SessionStorageService) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         let token = this.sessionStorageService.getToken();
+        let clonedReq = req;
 
         if(token) {
-            let clonedReq = req.clone({
-                headers: req.headers.set('Authorization', `Bearer ${token}`)
+            clonedReq = req.clone({
+                setHeaders: { Authorization: `${token}` }
             });
-            return next.handle(clonedReq);
         }
         
-        return next.handle(req).pipe(
+        return next.handle(clonedReq).pipe(
             catchError(err => {
                 if(err.status === 401) {
                     this.authService.logout();

@@ -13,6 +13,10 @@ import { CourseInfoModule } from './features/course-info/course-info.module';
 import { AppRoutingModule } from './app-routing.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './auth/interceptors/token.interceptor';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { reducers } from './store/index';
+import { effects } from './store/index';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +27,9 @@ import { TokenInterceptor } from './auth/interceptors/token.interceptor';
     FontAwesomeModule,
     CoursesModule,
     CourseInfoModule,
-    AppRoutingModule
+    AppRoutingModule,
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot(effects)
   ],
   providers: [
     AuthorizedGuard,

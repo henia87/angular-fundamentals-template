@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 //import { mockedCoursesList, mockedAuthorsList } from '@app/shared/mocks/mock';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CoursesStoreService } from '@app/services/courses-store.service';
 import { Course } from '@app/services/courses.service';
 import { Author } from '@app/services/courses.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-course-info',
   templateUrl: './course-info.component.html',
   styleUrls: ['./course-info.component.scss']
 })
-export class CourseInfoComponent implements OnInit {
+export class CourseInfoComponent implements OnInit, OnDestroy {
   // Use the names for the input `course`.
   course: Course = {
     title: "",
@@ -21,6 +23,7 @@ export class CourseInfoComponent implements OnInit {
     authors: []
   };
   authors: Author[] = [];
+  private unsubscribe$ = new Subject<void>();
   
   // title:string = "";
   // description:string = "";
@@ -35,7 +38,9 @@ export class CourseInfoComponent implements OnInit {
     let courseId = this.route.snapshot.paramMap.get('id');
 
     if(courseId) {
-      this.coursesStoreService.getCourse(courseId).subscribe({
+      this.coursesStoreService.getCourse(courseId)
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
         next: (course: Course) => {
           this.course = course;
           this.getAuthorsFromIds();
@@ -45,7 +50,9 @@ export class CourseInfoComponent implements OnInit {
         }
       });
 
-      this.coursesStoreService.getAllAuthors().subscribe({
+      this.coursesStoreService.getAllAuthors()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
         next: (authors: Author[]) => {
           this.authors = authors;
           this.getAuthorsFromIds();
@@ -82,5 +89,10 @@ export class CourseInfoComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['./courses']);
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }

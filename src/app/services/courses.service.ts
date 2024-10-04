@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -19,17 +19,21 @@ export class CoursesService {
         );
     }
 
-    createCourse(course: Omit<Course, "id" | "creationDate">) { // replace 'any' with the required interface
+    createCourse(course: Omit<Course, "id" | "creationDate">): Observable<Course> { // replace 'any' with the required interface
         // Add your code here
-        return this.http.post(`${this.baseURL}/courses/add`, course);
+        return this.http.post<{successful: boolean, result: Course}>(`${this.baseURL}/courses/add`, course).pipe(
+            map(response => response.result)
+        );
     }
 
-    editCourse(id: string, course: Omit<Course, "id" | "creationDate">) { // replace 'any' with the required interface
+    editCourse(id: string, course: Omit<Course, "id" | "creationDate">): Observable<Course> { // replace 'any' with the required interface
         // Add your code here
-        return this.http.put(`${this.baseURL}/courses/${id}`, course);   
+        return this.http.put<{ successful: boolean, result: Course }>(`${this.baseURL}/courses/${id}`, course).pipe(
+            map(response => response.result)
+        );   
     }
 
-    getCourse(id: string) {
+    getCourse(id: string): Observable<Course> {
         // Add your code here
         return this.http.get<{successful: boolean, result: Course}>(`${this.baseURL}/courses/${id}`).pipe(
             map(response => response.result)
@@ -41,14 +45,15 @@ export class CoursesService {
         return this.http.delete(`${this.baseURL}/courses/${id}`);
     }
 
-    filterCourses(value: string) {
-        // Add your code here
-        return this.getAll().pipe(
-            map(courses => courses.filter(course => course.title.includes(value) || course.description.includes(value) || course.duration.toString() === value || course.creationDate.toString() === value))
+    filterCourses(value: string): Observable<Course[]> {
+        let params = new HttpParams().set('searchTerm', value.trim());
+        
+        return this.http.get<{successful: boolean, result: Course[]}>(`${this.baseURL}/courses/all`, { params }).pipe(
+            map(response => response.result)
         );
     }
 
-    getAllAuthors() {
+    getAllAuthors(): Observable<Author[]> {
         // Add your code here
         return this.http.get<{successful: boolean, result: Author[]}>(`${this.baseURL}/authors/all`).pipe(
             map(response => response.result)
@@ -60,7 +65,7 @@ export class CoursesService {
         return this.http.post(`${this.baseURL}/authors/add`, { name });
     }
 
-    getAuthorById(id: string) {
+    getAuthorById(id: string): Observable<Author> {
         // Add your code here
         return this.http.get<{successful: boolean, result: Author}>(`${this.baseURL}/authors/${id}`).pipe(
             map(response => response.result)

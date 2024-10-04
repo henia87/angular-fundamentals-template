@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CoursesService } from './courses.service';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, finalize, switchMap } from 'rxjs/operators';
 import { Course } from './courses.service';
 import { Author } from './courses.service';
 
@@ -29,12 +29,12 @@ export class CoursesStoreService {
         return this.coursesService.getAll().pipe(
             tap((courses) => {
                 this.courses$$.next(courses);
-                this.isLoading$$.next(false);
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
@@ -43,14 +43,14 @@ export class CoursesStoreService {
         // Add your code here
         this.isLoading$$.next(true);
         return this.coursesService.createCourse(course).pipe(
-            tap(() => {
-                this.getAll();
-                this.isLoading$$.next(false);
+            tap((newCourse) => {
+                this.courses$$.next([...this.courses$$.value, newCourse]);
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
@@ -61,12 +61,12 @@ export class CoursesStoreService {
         return this.coursesService.getCourse(id).pipe(
             tap((course) => {
                 this.currentCourse$$.next(course);
-                this.isLoading$$.next(false);
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
           );
     }
@@ -75,14 +75,14 @@ export class CoursesStoreService {
         // Add your code here
         this.isLoading$$.next(true);
         return this.coursesService.editCourse(id, course).pipe(
-            tap(() => {
-                this.getAll();
-                this.isLoading$$.next(false);
+            switchMap(() => {
+                return this.getAll();
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
@@ -91,30 +91,30 @@ export class CoursesStoreService {
         // Add your code here
         this.isLoading$$.next(true);
         return this.coursesService.deleteCourse(id).pipe(
-            tap(() => {
-                this.getAll();
-                this.isLoading$$.next(false);
+            switchMap(() => {
+                return this.getAll();
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
 
-    filterCourses(value: string) {
+    filterCourses(value: string): Observable<Course[]> {
         // Add your code here
         this.isLoading$$.next(true);
         return this.coursesService.filterCourses(value).pipe(
             tap((filteredCourses) => {
                 this.courses$$.next(filteredCourses);
-                this.isLoading$$.next(false);
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
@@ -125,12 +125,12 @@ export class CoursesStoreService {
         return this.coursesService.getAllAuthors().pipe(
             tap((authors) => {
                 this.authors$$.next(authors);
-                this.isLoading$$.next(false);
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
@@ -141,12 +141,12 @@ export class CoursesStoreService {
         return this.coursesService.createAuthor(name).pipe(
             tap(() => {
                 this.getAllAuthors();
-                this.isLoading$$.next(false);
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
+                return throwError(() => new Error(`An error occurred: ${error}`));
+            }),
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
@@ -157,33 +157,12 @@ export class CoursesStoreService {
         return this.coursesService.getAuthorById(id).pipe(
             tap((author) => {
                 this.currentAuthor$$.next(author);
-                this.isLoading$$.next(false);
             }),
             catchError((error) => {
-                console.error("An error occurred.", error);
-                this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
-            })
-        );
-    }
-
-    searchCourse(query: string) {
-        this.isLoading$$.next(true);
-        return this.coursesService.getAll().pipe(
-            tap((courses) => {
-                let searchedCourses = courses.filter(course =>
-                    course.title.includes(query) ||
-                    course.description.includes(query) ||
-                    course.duration.toString() === query ||
-                    course.creationDate.toString() === query
-                );
-                this.courses$$.next(searchedCourses);
-                this.isLoading$$.next(false);
+                return throwError(() => new Error(`An error occurred: ${error}`));
             }),
-            catchError((error) => {
-                console.error("An error occurred.", error);
+            finalize(() => {
                 this.isLoading$$.next(false);
-                return throwError(() => new Error(error));
             })
         );
     }
